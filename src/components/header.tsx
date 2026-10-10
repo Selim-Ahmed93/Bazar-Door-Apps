@@ -16,7 +16,7 @@ const Header = () => {
             {/* Logo */}
             <div className="w-11 h-11 bg-[#0a7c36] rounded-xl flex items-center justify-center shadow-sm">
               <Image
-                src="/logo-icon.png"
+                src="/assets/logo-icon.png"
                 alt="বাজার দর"
                 width={30}
                 height={30}
