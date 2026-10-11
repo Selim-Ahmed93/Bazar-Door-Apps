@@ -1,5 +1,6 @@
 import Image from "next/image";
 import React from "react";
+import Link from "next/link";
 import Navlinks from "./Navlinks";
 
 const Header = () => {
@@ -40,8 +41,8 @@ const Header = () => {
 
           {/* Auth Buttons */}
           <div className="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
+            <Link
+              href="/signin"
               className="
                 px-3 py-2
                 text-sm font-medium
@@ -50,13 +51,14 @@ const Header = () => {
                 hover:text-[#0a7c36]
                 hover:bg-green-50
                 transition-colors
+                inline-block
               "
             >
               সাইন ইন
-            </button>
+            </Link>
 
-            <button
-              type="button"
+            <Link
+              href="/signup"
               className="
                 px-4 py-2
                 text-sm font-semibold
@@ -67,10 +69,11 @@ const Header = () => {
                 hover:bg-[#086b2f]
                 active:scale-95
                 transition-all
+                inline-block
               "
             >
               সাইন আপ
-            </button>
+            </Link>
           </div>
         </div>
 
