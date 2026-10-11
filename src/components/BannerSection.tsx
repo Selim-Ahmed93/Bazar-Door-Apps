@@ -1,13 +1,16 @@
 import Image from "next/image";
 
 export default function BannerSection() {
+   const currentDate = new Date().toLocaleDateString("bn-BD", {
+    dateStyle: "full",
+  });
   return (
     <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 w-full">
       {/* Left Side: Text Content */}
       <div className="flex-1 space-y-4">
         {/* Date Badge */}
         <div className="inline-block bg-emerald-100/70 text-emerald-800 text-xs font-semibold px-3 py-1.5 rounded-full">
-          মঙ্গলবার, ৬ অক্টোবর, ২০২৬
+          {currentDate}
         </div>
 
         {/* Heading */}

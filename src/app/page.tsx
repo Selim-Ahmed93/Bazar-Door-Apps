@@ -1,6 +1,8 @@
 import Marquee from "@/components/marquie";
 import BannerSection from "@/components/BannerSection";
 import PriceIncreaseSection from "@/components/PriceIncreaseSection";
+import PriceDecreaseSection from "@/components/PriceDecreaseSection";
+import AllProductsSection from "@/components/AllProductsSection";
 
 export default function Home() {
   return (
@@ -13,6 +15,8 @@ export default function Home() {
           <BannerSection />
         </div>
         <PriceIncreaseSection />
+        <PriceDecreaseSection />
+        <AllProductsSection />
       </main>
     </div>
   );

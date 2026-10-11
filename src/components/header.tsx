@@ -10,7 +10,10 @@ const Header = () => {
   return (
     <header className="w-full bg-white border-b border-gray-200">
       <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
-        <div className="min-h-[72px] flex items-center justify-between gap-6">
+        
+        {/* Top Row: Logo + Title + Auth Buttons */}
+        <div className="py-3 flex items-center justify-between gap-6">
+          
           {/* Logo + Title */}
           <div className="flex items-center gap-3 shrink-0">
             {/* Logo */}
@@ -34,10 +37,6 @@ const Header = () => {
               </p>
             </div>
           </div>
-
-          <nav className="hidden md:flex items-center">
-            <Navlinks />
-          </nav>
 
           {/* Auth Buttons */}
           <div className="flex items-center gap-2 shrink-0">
@@ -75,10 +74,11 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Mobile-এর জন্য নিচের লাইনে নেভলিংকস (ছোট স্ক্রিনে স্ক্রোল করা যাবে) */}
-        <div className="block md:hidden pb-3 pt-1 overflow-x-auto whitespace-nowrap">
+        {/* Bottom Row: Navlinks (Below logo, date and buttons with horizontal scroll) */}
+        <div className="py-2.5 overflow-x-auto whitespace-nowrap border-t border-gray-100">
           <Navlinks />
         </div>
+
       </div>
     </header>
   );

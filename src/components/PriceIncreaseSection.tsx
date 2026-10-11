@@ -17,7 +17,7 @@ interface Product {
   pct?: number;
 }
 
-//  fallback data
+// fallback data
 const fallbackProducts: Product[] = [
   {
     id: 1,
@@ -90,7 +90,7 @@ export default function PriceIncreaseSection() {
           const filtered = rawArray
             .filter(
               (item: Product) =>
-                item && item.change && item.change.dir === "up",
+                item && item.change && item.change.dir === "up"
             )
             .map((item: Product, index: number) => ({
               id: item.id || index,
@@ -99,11 +99,10 @@ export default function PriceIncreaseSection() {
                 item.unit === "kg"
                   ? "প্রতি কেজি"
                   : item.unit === "litre"
-                    ? "প্রতি লিটার"
-                    : "প্রতি একক",
+                  ? "প্রতি লিটার"
+                  : "প্রতি একক",
               today: item.today || 0,
               image: item.image || "🛒",
-              5: item.change?.pct || 0,
               pct: item.change?.pct || 0,
             }));
 
@@ -123,7 +122,7 @@ export default function PriceIncreaseSection() {
       <div className="flex items-center gap-2 mb-6">
         <span className="text-red-600 font-bold text-lg">▲</span>
         <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-          আজ দাম বেড়েছে
+          আজ দাম বেড়েছে
         </h2>
       </div>
 
@@ -132,15 +131,15 @@ export default function PriceIncreaseSection() {
         {products.slice(0, 6).map((item) => (
           <div
             key={item.id}
-            className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between"
+            className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1.5 hover:border-green-200 transition-all duration-300 flex flex-col justify-between cursor-pointer group"
           >
             {/* Top Part: Emoji, Name & Unit */}
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-14 h-14 bg-gray-50 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
+              <div className="w-14 h-14 bg-gray-50 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 group-hover:scale-110 group-hover:bg-green-50 transition-transform duration-300">
                 {item.image}
               </div>
               <div>
-                <h3 className="text-lg font-bold text-gray-900">
+                <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#0a7c36] transition-colors duration-200">
                   {item.nameBn}
                 </h3>
                 <p className="text-xs text-gray-500">{item.unit}</p>
@@ -161,7 +160,7 @@ export default function PriceIncreaseSection() {
                 </span>
               </div>
 
-              <div className="flex items-center gap-1 bg-red-50 text-red-600 px-2.5 py-1 rounded-lg text-xs font-bold">
+              <div className="flex items-center gap-1 bg-red-50 text-red-600 px-2.5 py-1 rounded-lg text-xs font-bold shadow-sm">
                 <span>▲</span>
                 <span>{item.pct}%</span>
               </div>

@@ -1,12 +1,21 @@
+import React from "react";
+
 interface Product {
   id: string | number;
   nameBn?: string;
   name?: string;
   title?: string;
   icon?: string;
+  image?: string;
   price?: number | string;
   currentPrice?: number | string;
   pricePerUnit?: number | string;
+  today?: number | string;
+  unit?: string;
+  change?: {
+    dir: string;
+    pct: number;
+  };
 }
 
 interface ProductResponse {
@@ -20,6 +29,7 @@ function getProductName(product: Product): string {
 
 function getProductPrice(product: Product): number | string {
   return (
+    product.today ??
     product.price ??
     product.currentPrice ??
     product.pricePerUnit ??
@@ -62,13 +72,13 @@ export default async function Marquee() {
   }
 
   if (products.length === 0) {
-    console.error("No products found in API response.");
     return null;
   }
 
   return (
     <section className="w-full overflow-hidden border-y border-green-100 bg-green-50/70 py-3 sm:py-4">
       <div className="mx-auto flex w-full max-w-7xl items-center gap-3 px-3 sm:gap-4 sm:px-6 lg:px-8">
+        
         {/* Marquee Label */}
         <div className="z-10 flex shrink-0 items-center gap-2 rounded-lg bg-[#0a7c36] px-2.5 py-2 text-white shadow-sm sm:px-3">
           <span className="relative flex size-2">
@@ -89,8 +99,11 @@ export default async function Marquee() {
           {/* Right Gradient */}
           <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-5 bg-gradient-to-l from-green-50 to-transparent sm:w-8" />
 
-          {/* Scrolling Track */}
-          <div className="marquee-track flex w-max">
+          {/* Scrolling Track with Slower Speed */}
+          <div 
+            className="marquee-track flex w-max"
+            style={{ animationDuration: "45s" }}
+          >
             {[0, 1].map((copy) => (
               <div
                 key={copy}
@@ -99,22 +112,38 @@ export default async function Marquee() {
               >
                 {products.map((product, index) => (
                   <div
-                    key={`${copy}-${product.id}-${index}`}
+                    key={`${copy}-${product.id ?? index}-${index}`}
                     className="flex shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-5"
                   >
+                    {/* Icon / Image */}
+                    <span className="text-base" aria-hidden="true">
+                      {product.image ?? product.icon ?? "🛒"}
+                    </span>
+
                     {/* Product Name */}
                     <span className="whitespace-nowrap text-xs font-medium text-gray-700 sm:text-sm">
-                      <span className="mr-1.5" aria-hidden="true">
-                        {product.icon ?? "🛒"}
-                      </span>
-
                       {getProductName(product)}
                     </span>
 
-                    {/* Product Price */}
+                    {/* Product Price & Unit */}
                     <span className="whitespace-nowrap text-xs font-bold text-[#0a7c36] sm:text-sm">
                       ৳{getProductPrice(product)}
+                      {product.unit ? `/${product.unit}` : ""}
                     </span>
+
+                    {/* Change Percentage */}
+                    {product.change && (
+                      <span
+                        className={`text-[11px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5 ${
+                          product.change.dir === "up"
+                            ? "text-red-600 bg-red-50"
+                            : "text-green-600 bg-green-50"
+                        }`}
+                      >
+                        <span>{product.change.dir === "up" ? "▲" : "▼"}</span>
+                        <span>{product.change.pct}%</span>
+                      </span>
+                    )}
 
                     {/* Separator */}
                     <span
