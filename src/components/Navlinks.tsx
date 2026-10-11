@@ -9,43 +9,44 @@ export default function Navlinks() {
   const [categories, setCategories] = useState<any[]>([]);
 
   useEffect(() => {
-    // try-catch ব্যবহার করা হয়েছে যাতে error না মার
-    fetch("https://openapi.programming-hero.com/api/bazardor/products")
-      .then((res) => {
-        if (!res.ok) throw new Error("Fetch failed");
-        return res.json();
-      })
+    fetch("https://openapi.programming-hero.com/api/bazardor/categories")
+      .then((res) => res.json())
       .then((data) => {
-        const list = data.data || data.products || [];
-        setCategories(list);
+        const categoryList = data.data || data.categories || data || [];
+        setCategories(categoryList);
       })
       .catch((err) => {
-        console.error("Navlinks fetch error:", err);
-        // Fallback default categories if API fails
-        setCategories([
-          { slug: "all", nameBn: "সব পণ্য" },
-          { slug: "rice", nameBn: "চাল" },
-          { slug: "vegetable", nameBn: "সবজি" },
-          { slug: "fish", nameBn: "মাছ" },
-        ]);
+        console.error("Categories fetch error:", err);
       });
   }, []);
 
   return (
     <div className="flex items-center gap-3 overflow-x-auto pb-1">
-      {categories.map((cat, index) => {
-        const isActive = pathname === `/category/${cat.slug || index}`;
+      {categories.map((item: any, index: number) => {
+        const displayName =
+          typeof item === "string"
+            ? item
+            : item.categoryName || item.nameBn || item.category || item.name || item.slug;
+
+        const linkSlug =
+          typeof item === "string"
+            ? item
+            : item.category || item.slug || displayName;
+
+        const isActive =
+          decodeURIComponent(pathname) === `/category/${linkSlug}`;
+
         return (
           <Link
             key={index}
-            href={`/category/${cat.slug || index}`}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+            href={`/category/${linkSlug}`}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap ${
               isActive
                 ? "bg-[#0a7c36] text-white font-bold"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
-            {cat.nameBn || cat.name || "ক্যাটাগরি"}
+            {displayName}
           </Link>
         );
       })}
