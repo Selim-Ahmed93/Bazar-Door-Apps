@@ -2,13 +2,12 @@ import type { Metadata } from "next";
 import { Noto_Serif_Bengali } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
-
+import Footer from "@/components/Footer"; // Footer import kora holo
 
 const notoSerifBengali = Noto_Serif_Bengali({
   variable: "--font-geist-sans",
   subsets: ["latin","bengali"],
 });
-
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -23,8 +22,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <Header />
-        {children}
-        </body>
+        <main className="flex-1">{children}</main>
+        <Footer /> {/* Footer add kora holo */}
+      </body>
     </html>
   );
 }
