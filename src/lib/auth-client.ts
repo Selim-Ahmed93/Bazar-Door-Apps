@@ -7,7 +7,6 @@ export const authClient = createAuthClient({
         (typeof window !== "undefined" ? window.location.origin : "http://localhost:3000"),
 });
 
-// Auth Helpers destructure kore export kora
 export const {
     signIn,
     signUp,
@@ -15,4 +14,5 @@ export const {
     useSession,
     getSession,
     resetPassword,
+    updateUser,
 } = authClient;
