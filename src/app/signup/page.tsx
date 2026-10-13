@@ -43,8 +43,16 @@ export default function SignUpPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("পাসওয়ার্ড দুটি মিলছে না!");
+    const name = formData.name.trim();
+    const email = formData.email.trim();
+
+    if (!name) {
+      toast.error("আপনার নাম লিখুন!");
+      return;
+    }
+
+    if (!email) {
+      toast.error("আপনার ইমেইল লিখুন!");
       return;
     }
 
@@ -53,12 +61,17 @@ export default function SignUpPage() {
       return;
     }
 
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("পাসওয়ার্ড দুটি মিলছে না!");
+      return;
+    }
+
     setLoading(true);
 
     try {
       const { error } = await signUp.email({
-        name: formData.name,
-        email: formData.email,
+        name,
+        email,
         password: formData.password,
       });
 
@@ -69,10 +82,12 @@ export default function SignUpPage() {
 
       toast.success("রেজিস্ট্রেশন সফল হয়েছে! সাইন ইন করুন।");
 
+      // Requirement: Redirect to Sign In after registration
       router.push("/signin");
       router.refresh();
     } catch (err: unknown) {
       console.error("Email Sign Up Error:", err);
+
       toast.error("একটি সমস্যা হয়েছে, আবার চেষ্টা করুন।");
     } finally {
       setLoading(false);
@@ -84,10 +99,15 @@ export default function SignUpPage() {
     setSocialLoading("google");
 
     try {
-      await signIn.social({
+      const { error } = await signIn.social({
         provider: "google",
-        callbackURL: "/profile",
+        callbackURL: "/",
       });
+
+      if (error) {
+        toast.error(error.message || "Google দিয়ে সাইন ইন করা সম্ভব হয়নি!");
+        setSocialLoading(null);
+      }
     } catch (err: unknown) {
       console.error("Google Auth Error:", err);
 
@@ -102,10 +122,15 @@ export default function SignUpPage() {
     setSocialLoading("github");
 
     try {
-      await signIn.social({
+      const { error } = await signIn.social({
         provider: "github",
-        callbackURL: "/profile",
+        callbackURL: "/",
       });
+
+      if (error) {
+        toast.error(error.message || "GitHub দিয়ে সাইন ইন করা সম্ভব হয়নি!");
+        setSocialLoading(null);
+      }
     } catch (err: unknown) {
       console.error("GitHub Auth Error:", err);
 

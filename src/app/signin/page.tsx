@@ -17,6 +17,7 @@ export default function SignInPage() {
   const router = useRouter();
 
   const [loading, setLoading] = useState<boolean>(false);
+
   const [socialLoading, setSocialLoading] =
     useState<SocialProvider | null>(null);
 
@@ -42,7 +43,7 @@ export default function SignInPage() {
 
     try {
       const { error } = await signIn.email({
-        email: formData.email,
+        email: formData.email.trim(),
         password: formData.password,
       });
 
@@ -53,10 +54,12 @@ export default function SignInPage() {
 
       toast.success("সফলভাবে সাইন ইন করেছেন!");
 
-      router.push("/profile");
+      // Redirect to Home page after successful login
+      router.push("/");
       router.refresh();
     } catch (err: unknown) {
       console.error("Email Sign In Error:", err);
+
       toast.error("একটি সমস্যা হয়েছে, আবার চেষ্টা করুন।");
     } finally {
       setLoading(false);
@@ -68,13 +71,20 @@ export default function SignInPage() {
     setSocialLoading("google");
 
     try {
-      await signIn.social({
+      const { error } = await signIn.social({
         provider: "google",
-        callbackURL: "/profile",
+        callbackURL: "/",
       });
+
+      if (error) {
+        toast.error(error.message || "Google দিয়ে সাইন ইন করা সম্ভব হয়নি!");
+        setSocialLoading(null);
+      }
     } catch (err: unknown) {
       console.error("Google Auth Error:", err);
+
       toast.error("Google দিয়ে সাইন ইন করা সম্ভব হয়নি!");
+
       setSocialLoading(null);
     }
   };
@@ -84,13 +94,20 @@ export default function SignInPage() {
     setSocialLoading("github");
 
     try {
-      await signIn.social({
+      const { error } = await signIn.social({
         provider: "github",
-        callbackURL: "/profile",
+        callbackURL: "/",
       });
+
+      if (error) {
+        toast.error(error.message || "GitHub দিয়ে সাইন ইন করা সম্ভব হয়নি!");
+        setSocialLoading(null);
+      }
     } catch (err: unknown) {
       console.error("GitHub Auth Error:", err);
+
       toast.error("GitHub দিয়ে সাইন ইন করা সম্ভব হয়নি!");
+
       setSocialLoading(null);
     }
   };
@@ -144,7 +161,7 @@ export default function SignInPage() {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="কমপক্ষে ৮ অক্ষর"
+              placeholder="আপনার পাসওয়ার্ড লিখুন"
               autoComplete="current-password"
               required
               className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-200 focus:outline-none focus:border-[#0a7c36] focus:ring-1 focus:ring-[#0a7c36] transition-all"
