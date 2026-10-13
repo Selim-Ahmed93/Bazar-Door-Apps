@@ -6,25 +6,38 @@ import { useRouter } from "next/navigation";
 import { signIn } from "@/lib/auth-client";
 import toast from "react-hot-toast";
 
+type SocialProvider = "google" | "github";
+
+interface SignInFormData {
+  email: string;
+  password: string;
+}
+
 export default function SignInPage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [socialLoading, setSocialLoading] = useState<"google" | "github" | null>(null);
 
-  const [formData, setFormData] = useState({
+  const [loading, setLoading] = useState<boolean>(false);
+  const [socialLoading, setSocialLoading] =
+    useState<SocialProvider | null>(null);
+
+  const [formData, setFormData] = useState<SignInFormData>({
     email: "",
     password: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Email and Password Sign In
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     setLoading(true);
 
     try {
@@ -35,40 +48,47 @@ export default function SignInPage() {
 
       if (error) {
         toast.error(error.message || "ইমেইল বা পাসওয়ার্ড সঠিক নয়!");
-      } else {
-        toast.success("সফলভাবে সাইন ইন করেছেন!");
-        router.push("/");
-        router.refresh();
+        return;
       }
-    } catch (err) {
+
+      toast.success("সফলভাবে সাইন ইন করেছেন!");
+
+      router.push("/profile");
+      router.refresh();
+    } catch (err: unknown) {
+      console.error("Email Sign In Error:", err);
       toast.error("একটি সমস্যা হয়েছে, আবার চেষ্টা করুন।");
     } finally {
       setLoading(false);
     }
   };
 
+  // Google Sign In
   const handleGoogleLogin = async () => {
     setSocialLoading("google");
+
     try {
       await signIn.social({
         provider: "google",
-        callbackURL: "/",
+        callbackURL: "/profile",
       });
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Google Auth Error:", err);
       toast.error("Google দিয়ে সাইন ইন করা সম্ভব হয়নি!");
       setSocialLoading(null);
     }
   };
 
+  // GitHub Sign In
   const handleGitHubLogin = async () => {
     setSocialLoading("github");
+
     try {
       await signIn.social({
         provider: "github",
-        callbackURL: "/",
+        callbackURL: "/profile",
       });
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("GitHub Auth Error:", err);
       toast.error("GitHub দিয়ে সাইন ইন করা সম্ভব হয়নি!");
       setSocialLoading(null);
@@ -81,6 +101,7 @@ export default function SignInPage() {
         <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900">
           সাইন ইন
         </h1>
+
         <p className="text-sm text-gray-500 mt-2">
           বিস্তারিত দাম, বাজার তুলনা ও প্রোফাইল দেখতে অ্যাকাউন্টে ঢুকুন।
         </p>
@@ -89,30 +110,42 @@ export default function SignInPage() {
       <div className="w-full max-w-md bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+            <label
+              htmlFor="email"
+              className="block text-xs font-semibold text-gray-700 mb-1.5"
+            >
               ইমেইল
             </label>
+
             <input
+              id="email"
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               placeholder="you@example.com"
+              autoComplete="email"
               required
               className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-200 focus:outline-none focus:border-[#0a7c36] focus:ring-1 focus:ring-[#0a7c36] transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+            <label
+              htmlFor="password"
+              className="block text-xs font-semibold text-gray-700 mb-1.5"
+            >
               পাসওয়ার্ড
             </label>
+
             <input
+              id="password"
               type="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
               placeholder="কমপক্ষে ৮ অক্ষর"
+              autoComplete="current-password"
               required
               className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-200 focus:outline-none focus:border-[#0a7c36] focus:ring-1 focus:ring-[#0a7c36] transition-all"
             />
@@ -120,7 +153,7 @@ export default function SignInPage() {
 
           <button
             type="submit"
-            disabled={loading || !!socialLoading}
+            disabled={loading || socialLoading !== null}
             className="w-full mt-2 bg-[#0a7c36] hover:bg-[#086b2f] text-white font-semibold py-2.5 rounded-xl shadow-sm transition-all text-sm active:scale-[0.98] hover:shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "অপেক্ষা করুন..." : "সাইন ইন"}
@@ -129,24 +162,25 @@ export default function SignInPage() {
 
         <div className="relative my-6 text-center">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-100"></div>
+            <div className="w-full border-t border-gray-100" />
           </div>
+
           <span className="relative bg-white px-3 text-xs text-gray-400">
             অথবা
           </span>
         </div>
 
-        {/* Social Login Buttons with Hover & Click Effects */}
+        {/* Social Login Buttons */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <button
             type="button"
             onClick={handleGoogleLogin}
-            disabled={loading || !!socialLoading}
+            disabled={loading || socialLoading !== null}
             className="flex items-center justify-center gap-2 w-full px-3 py-2.5 text-xs font-semibold text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 hover:shadow-sm active:scale-[0.97] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {socialLoading === "google" ? (
               <span className="flex items-center gap-1.5">
-                <span className="w-3.5 h-3.5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></span>
+                <span className="w-3.5 h-3.5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
                 সংযুক্ত হচ্ছে...
               </span>
             ) : (
@@ -157,12 +191,12 @@ export default function SignInPage() {
           <button
             type="button"
             onClick={handleGitHubLogin}
-            disabled={loading || !!socialLoading}
+            disabled={loading || socialLoading !== null}
             className="flex items-center justify-center gap-2 w-full px-3 py-2.5 text-xs font-semibold text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 hover:shadow-sm active:scale-[0.97] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {socialLoading === "github" ? (
               <span className="flex items-center gap-1.5">
-                <span className="w-3.5 h-3.5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></span>
+                <span className="w-3.5 h-3.5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
                 সংযুক্ত হচ্ছে...
               </span>
             ) : (
@@ -173,14 +207,20 @@ export default function SignInPage() {
 
         <div className="mt-6 text-center text-xs text-gray-500">
           অ্যাকাউন্ট নেই?{" "}
-          <Link href="/signup" className="font-bold text-[#0a7c36] hover:underline">
+          <Link
+            href="/signup"
+            className="font-bold text-[#0a7c36] hover:underline"
+          >
             সাইন আপ করুন
           </Link>
         </div>
       </div>
 
       <div className="mt-6 text-center">
-        <Link href="/" className="text-xs text-gray-500 hover:text-gray-800 hover:underline transition-colors">
+        <Link
+          href="/"
+          className="text-xs text-gray-500 hover:text-gray-800 hover:underline transition-colors"
+        >
           ← হোম পেজে ফিরে যান
         </Link>
       </div>
