@@ -12,7 +12,6 @@ if (!uri) {
 
 const client = new MongoClient(uri);
 
-
 export const database = client.db("bazardor");
 
 const socialProviders: Record<string, { clientId: string; clientSecret: string }> = {};
@@ -37,12 +36,15 @@ if (
   };
 }
 
-const baseURL =
+// 🔥 Fix 1: baseURL clean ebong fallback sohoto
+const rawBaseURL =
   process.env.BETTER_AUTH_URL ||
+  process.env.NEXT_PUBLIC_APP_URL ||
   process.env.NEXT_PUBLIC_BETTER_AUTH_URL ||
-  (process.env.NODE_ENV === "production"
-    ? "https://bazar-door-apps.vercel.app"
-    : "http://localhost:3000");
+  "https://bazar-door-apps.vercel.app";
+
+// Sheshe extra slash `/` thakle muche phelbe
+const baseURL = rawBaseURL.replace(/\/$/, "");
 
 export const auth = betterAuth({
   database: mongodbAdapter(database, {
@@ -51,10 +53,13 @@ export const auth = betterAuth({
 
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL,
+
+  // 🔥 Fix 2: trustedOrigins Dynamic ebong Vercel deployment support
   trustedOrigins: [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "https://bazar-door-apps.vercel.app",
+    ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
   ],
 
   emailAndPassword: {
